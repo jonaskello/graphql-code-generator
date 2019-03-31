@@ -169,6 +169,7 @@ export const EXAMPLES = {
     state: {
       config: `generates:
   models.ts:
+    - typescript
     - typescript-mongodb`,
       schema: `type User @entity {
   id: ID! @id

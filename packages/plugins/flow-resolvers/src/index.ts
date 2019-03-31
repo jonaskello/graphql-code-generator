@@ -1,7 +1,8 @@
 import { RawResolversConfig } from '@graphql-codegen/visitor-plugin-common';
 import { Types, PluginFunction } from '@graphql-codegen/plugin-helpers';
-import { isScalarType, parse, printSchema, visit, GraphQLSchema } from 'graphql';
+import { isScalarType, parse, visit, GraphQLSchema } from 'graphql';
 import { FlowResolversVisitor } from './visitor';
+import { printSchemaWithDirectives } from 'graphql-toolkit';
 
 export interface FlowResolversPluginConfig extends RawResolversConfig {}
 
@@ -65,7 +66,7 @@ export type DirectiveResolverFn<Result = {}, Parent = {}, Args = {}, Context = {
 ) => Result | Promise<Result>;
 `;
 
-  const printedSchema = printSchema(schema);
+  const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
   const visitor = new FlowResolversVisitor(config, schema);
   const visitorResult = visit(astNode, { leave: visitor });

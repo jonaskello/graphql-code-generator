@@ -215,11 +215,38 @@ describe('TypeScript', () => {
   });
 
   describe('Issues', () => {
+    it('#1597 - Generator cant convert empty object literal to AST', async () => {
+      const schema = buildSchema(/* GraphQL */ `
+        scalar Bar
+
+        input Foo {
+          bar: Bar = {}
+        }
+      `);
+
+      try {
+        await plugin(
+          schema,
+          [],
+          {
+            scalars: {
+              RawJson: '{ [key: string]: any }',
+            },
+          },
+          { outputFile: '' }
+        );
+      } catch (e) {
+        // Should not get here
+        expect(true).toBeFalsy();
+      }
+    });
+
     it('#1488 - Should generate readonly also in input types when immutableTypes is set', async () => {
-      const schema = buildSchema(`
-      input MyInput {
-        f: String!
-      }`);
+      const schema = buildSchema(/* GraphQL */ `
+        input MyInput {
+          f: String!
+        }
+      `);
 
       const result = await plugin(schema, [], { immutableTypes: true }, { outputFile: '' });
 

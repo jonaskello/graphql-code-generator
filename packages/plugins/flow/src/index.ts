@@ -1,7 +1,8 @@
 import { Types, PluginFunction } from '@graphql-codegen/plugin-helpers';
-import { parse, printSchema, visit, GraphQLSchema } from 'graphql';
+import { parse, visit, GraphQLSchema } from 'graphql';
 import { FlowVisitor } from './visitor';
 import { RawTypesConfig } from '@graphql-codegen/visitor-plugin-common';
+import { printSchemaWithDirectives } from 'graphql-toolkit';
 
 export * from './visitor';
 export * from './flow-variables-to-object';
@@ -45,7 +46,7 @@ export interface FlowPluginConfig extends RawTypesConfig {
 
 export const plugin: PluginFunction<FlowPluginConfig> = (schema: GraphQLSchema, documents: Types.DocumentFile[], config: FlowPluginConfig) => {
   const header = `/* @flow */\n\n`;
-  const printedSchema = printSchema(schema);
+  const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
   const visitor = new FlowVisitor(schema, config);
 

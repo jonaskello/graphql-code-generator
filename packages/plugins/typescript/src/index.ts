@@ -2,6 +2,7 @@ import { Types, PluginFunction } from '@graphql-codegen/plugin-helpers';
 import { parse, printSchema, visit, GraphQLSchema, TypeInfo, GraphQLNamedType, visitWithTypeInfo, getNamedType, isIntrospectionType, DocumentNode, printIntrospectionSchema, isObjectType } from 'graphql';
 import { RawTypesConfig } from '@graphql-codegen/visitor-plugin-common';
 import { TsVisitor } from './visitor';
+import { printSchemaWithDirectives } from 'graphql-toolkit';
 import { TsIntrospectionVisitor } from './introspection-visitor';
 export * from './typescript-variables-to-object';
 export * from './visitor';
@@ -99,7 +100,7 @@ export interface TypeScriptPluginConfig extends RawTypesConfig {
 
 export const plugin: PluginFunction<TypeScriptPluginConfig> = (schema: GraphQLSchema, documents: Types.DocumentFile[], config: TypeScriptPluginConfig) => {
   const visitor = new TsVisitor(schema, config);
-  const printedSchema = printSchema(schema);
+  const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
   const maybeValue = `type Maybe<T> = ${visitor.config.maybeValue};`;
   const visitorResult = visit(astNode, { leave: visitor });

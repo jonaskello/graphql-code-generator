@@ -1,7 +1,8 @@
 import { RawResolversConfig } from '@graphql-codegen/visitor-plugin-common';
 import { Types, PluginFunction } from '@graphql-codegen/plugin-helpers';
-import { isScalarType, parse, printSchema, visit, GraphQLSchema } from 'graphql';
+import { isScalarType, parse, visit, GraphQLSchema } from 'graphql';
 import { TypeScriptResolversVisitor } from './visitor';
+import { printSchemaWithDirectives } from 'graphql-toolkit';
 
 export interface TypeScriptResolversPluginConfig extends RawResolversConfig {
   /**
@@ -176,7 +177,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 `;
 
-  const printedSchema = printSchema(schema);
+  const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
   const visitorResult = visit(astNode, { leave: visitor });
   const { getRootResolver, getAllDirectiveResolvers, mappersImports, unusedMappers } = visitor;
