@@ -1,5 +1,6 @@
 import '@graphql-codegen/testing';
 import { buildSchema, parse } from 'graphql';
+import { buildSchemaFromTypeDefinitions } from 'graphql-tools';
 import { validateTs } from './validate';
 import { plugin } from '../src/index';
 
@@ -241,6 +242,34 @@ describe('TypeScript', () => {
       type CardEdge {
         count: Int! @default(value: 1)
       }`);
+
+      const result = await plugin(schema, [], {}, { outputFile: '' });
+      expect(result).toBeSimilarStringTo(`export type Any = Scalars['String'] | Scalars['Int'] | Scalars['Float'] | Scalars['ID'];`);
+      expect(result).toBeSimilarStringTo(`
+      export type CardEdge = {
+        count: Scalars['Int'],
+      };`);
+      validateTs(result);
+    });
+
+    it.only('#1625 - Extended union type not extended in joined schema', async () => {
+      const schema1 = parse(`
+        union FooBar = Foo | Bar
+        type Foo {
+          id: ID!
+        }
+        type Bar {
+          id: ID!
+        }
+      `);
+      const schema2 = parse(`
+        extend union FooBar = Zoo
+        type Zoo {
+          id: ID!
+        }
+      `);
+
+      const schema = buildSchemaFromTypeDefinitions([schema1, schema2]);
 
       const result = await plugin(schema, [], {}, { outputFile: '' });
       expect(result).toBeSimilarStringTo(`export type Any = Scalars['String'] | Scalars['Int'] | Scalars['Float'] | Scalars['ID'];`);
